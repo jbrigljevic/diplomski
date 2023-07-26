@@ -7,22 +7,13 @@ int main() {
     Graph graph(file_name);
     graph.print();*/
     int no_nodes = 8;
-    std::vector<std::vector<bool>> neigh_matrix;
-    std::vector<bool> tmp(no_nodes, false);
-    for(int i = 0; i < no_nodes; ++i) neigh_matrix.push_back(tmp);
-
-    neigh_matrix[0][4] = neigh_matrix[1][5] = neigh_matrix[2][6] =
-    neigh_matrix[3][7] = neigh_matrix[4][5] = neigh_matrix[5][6] = 
-    neigh_matrix[6][7] = neigh_matrix[7][4] = true;
-    for(int i = 0; i < no_nodes; ++i){
-        for(int j = 0; j < no_nodes; ++j){
-            if(neigh_matrix[i][j]) neigh_matrix[j][i] = true;
-        }
-    }
+    std::vector<std::vector<int>> adj_matrix;
+    adj_matrix.insert(adj_matrix.end(), { {4}, {5}, {6}, {7}, {0, 5, 7}, 
+                    {1, 4, 6}, {2, 5, 7}, {3, 4, 6} });
     
-    Graph graph(no_nodes, neigh_matrix);
+    Graph graph(no_nodes, adj_matrix);
     //graph.print();
-    //algorithm(&graph);
+    graph.algorithm();
 }
 
 /*NOTE TO FUTURE SELF: DIMACS IS USED FOR THE CLIQUE PROBLEM, SO WE CONSIDER
