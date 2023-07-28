@@ -3,12 +3,12 @@
 #include<bits/stdc++.h>
 
 #define MAX_ITER 2 * pow(10, 6)
-#define NO_CHANGE 100000
+#define NO_CHANGE 10000
 class Graph{
 private:
     int no_nodes;
-    std::vector<std::vector<int>> adj_matrix;
-    std::vector<int> weights;
+    std::vector<std::vector<int>> adj_matrix; // graph's adjacency matrix
+    std::vector<int> weights; // weights of vertices
 
 public:
     class Solution{
@@ -16,14 +16,22 @@ public:
         Graph* graph;
         std::vector<int> S; // this is a permutation of the vertices
         std::vector<int> perm; // this remembers the location of each vertex in S
+        std::vector<int> tightness; // tightness of each vertex
         int S_size;
         int free_size;
-        std::vector<int> tightness;
-        std::vector<int> mi;
-        std::set<int> candidates;
+        
+        std::vector<int> mi; // the vector required in N1
+
+        std::set<int> candidates; // the vector required in N2
+        std::vector<std::list<int>> sol_neighs;
+        std::vector<std::vector<std::list<int>::iterator>> pointers;
 
     public:
         Solution(Graph* graph);
+        Solution(const Solution& sol);
+
+        friend void swap(Solution& fst, Solution& snd);
+        Solution& operator=(Solution sol);
 
         void move_vertex(int vertex, int location);
         void insert(int vertex);
@@ -82,3 +90,5 @@ public:
     Solution algorithm(int max_iter = MAX_ITER, int c1 = 1, int c2 = 3,
                         int c3 = 4, int c4 = 2);
 };
+
+void swap(Graph::Solution& fst, Graph::Solution& snd);

@@ -1,5 +1,10 @@
 #include "graph.h"
 
+void exit(){
+    std::cout << "Aborted!" << std::endl;
+    std::exit(0);
+}
+
 template<typename T>
 void print(T container, std::string pre = "NULL"){
     if(pre != "NULL") std::cout << pre;
@@ -8,15 +13,56 @@ void print(T container, std::string pre = "NULL"){
     std::cout << std::endl;
 }
 
-Graph::Solution::Solution(Graph* graph) : graph(graph){
-    for(int i = 0; i < graph->get_no_nodes(); ++i){
+Graph::Solution::Solution(Graph* graph) : graph(graph),
+        sol_neighs(std::vector<std::list<int>>(graph->no_nodes)),
+        pointers(std::vector<std::vector<std::list<int>::iterator>>(
+            graph->no_nodes, std::vector<std::list<int>::iterator>(
+                graph->no_nodes))){
+    int no_nodes = graph->get_no_nodes();
+    for(int i = 0; i < no_nodes; ++i){
         S.push_back(i);
         perm.push_back(i);
     }
     S_size = 0;
-    free_size = graph->get_no_nodes();
-    tightness.assign(graph->get_no_nodes(), 0);
+    free_size = no_nodes;
+    tightness.assign(no_nodes, 0);
     mi = graph->get_weights();
+}
+
+Graph::Solution::Solution(const Solution& sol) : graph(sol.graph), S(sol.S),
+        perm(sol.perm), tightness(sol.tightness), S_size(sol.S_size),
+        free_size(sol.free_size), mi(sol.mi), candidates(sol.candidates),
+        sol_neighs(sol.sol_neighs),
+        pointers(std::vector<std::vector<std::list<int>::iterator>>(
+            graph->no_nodes, std::vector<std::list<int>::iterator>(
+                graph->no_nodes))){
+    // pointers have to point to the new vector "sol_neighs", therefore the
+    // vector "pointers" has to be manually constructed
+    for(int v = 0; v < graph->get_no_nodes(); ++v){
+        for(auto x = sol_neighs[v].begin(); x != sol_neighs[v].end(); ++x){
+            pointers[*x][v] = x; 
+        }
+    }
+}
+
+void swap(Graph::Solution& fst, Graph::Solution& snd){
+    using std::swap;
+
+    swap(fst.graph, snd.graph);
+    swap(fst.S, snd.S);
+    swap(fst.perm, snd.perm);
+    swap(fst.tightness, snd.tightness);
+    swap(fst.S_size, snd.S_size);
+    swap(fst.free_size, snd.free_size);
+    swap(fst.mi, snd.mi);
+    swap(fst.candidates, snd.candidates);
+    swap(fst.sol_neighs, snd.sol_neighs);
+    swap(fst.pointers, snd.pointers);
+}
+
+Graph::Solution& Graph::Solution::operator=(Graph::Solution rhs){
+    swap(*this, rhs);
+    return *this;
 }
 
 void Graph::Solution::move_vertex(int vertex, int location){
@@ -37,13 +83,17 @@ void Graph::Solution::insert(int vertex){
 
     // place the vertex into the solution
     move_vertex(vertex, S_size++);
-
-    // update the tightness of its neighbors and the array mi
+    // update the tightness of its neighbors and the array mi and the
+    // sol_neighs vectors
     for(auto it = graph->adj_matrix[vertex].begin();
             it != graph->adj_matrix[vertex].end(); ++it){
         mi[*it] -= graph->get_weight(vertex);
         if(!(tightness[*it]++) && is_free(*it))
             move_vertex(*it, free_size-- + S_size - 1);
+        
+        sol_neighs[*it].push_back(vertex);
+        pointers[vertex][*it] = sol_neighs[*it].end();
+        std::advance(pointers[vertex][*it], -1);
         /*std::cout << "Insertion of vertex " << vertex << " increased the "
                 "tightness of vertex " << *it << std::endl;*/
     }
@@ -82,6 +132,11 @@ void Graph::Solution::remove(int vertex){
         if(!(--tightness[*it]) && is_non_free(*it))
             move_vertex(*it, S_size + free_size++);
         
+        /*::print(sol_neighs[*it], "Neighs: ");
+        std::cout << "vertex: " << vertex << ", it: " << *it
+            << ", pointer: " << *pointers[vertex][*it] << std::endl;*/
+        
+        sol_neighs[*it].erase(pointers[vertex][*it]);
         /*std::cout << "Removal of vertex " << vertex << " decreased the "
                 "tightness of vertex " << *it << std::endl;*/
     }
@@ -256,8 +311,9 @@ Graph::Graph(std::string file_name){
         ss >> tmp;
         ss >> tmp;
         no_nodes = std::stoi(tmp);
-        std::vector<int> vec;
-        adj_matrix.assign(no_nodes, vec);
+        
+        adj_matrix = std::vector<std::vector<int>>(no_nodes);
+
         for(int i = 0; i < no_nodes; ++i){
             weights.push_back((i + 1) % 200 + 1);
         }
@@ -337,11 +393,6 @@ Graph::Solution Graph::perturb(int c, Solution sol, std::vector<bool>& del,
     return sol;
 }
 
-void exit(){
-    std::cout << "Aborted!" << std::endl;
-    std::exit(0);
-}
-
 Graph::Solution Graph::first_improvement(int k, Solution& sol,
                                             std::vector<bool>* del, int* ins){
     if(k == 1) sol.N1(del);
@@ -396,8 +447,9 @@ void Graph::accept(Solution& sol, Solution& new_sol, Solution& best_sol, int& i,
 
 Graph::Solution Graph::algorithm(int max_iter, int c1, int c2, int c3, int c4){
     Solution S(this);
-
+    
     maximize(S);
+
     std::cout << "Initialization:" << std::endl;
     ::print(S.get_solution(), "S_0: "); ::print(S.get_solution_c(), "S_0_c: ");
     std::cout << "Begin local search" << std::endl;
@@ -412,8 +464,9 @@ Graph::Solution Graph::algorithm(int max_iter, int c1, int c2, int c3, int c4){
     int no_change = 0;
     int previous_weight = 0;
     while(max_iter-- && no_change != NO_CHANGE){
-        if(!(max_iter % 1)){
-            //std::cout << "Iteration #" << MAX_ITER - max_iter << std::endl;
+        if(!(max_iter % 100)){
+            std::cout << "Iteration #" << MAX_ITER - max_iter << std::endl;
+            std::cout << weight(S_best) << std::endl;
             if(weight(S) > previous_weight){
                 previous_weight = weight(S);
                 no_change = 0;
@@ -430,12 +483,15 @@ Graph::Solution Graph::algorithm(int max_iter, int c1, int c2, int c3, int c4){
         accept(S, S_new, S_best, i, local_best_w, c2, c3, c4);
         //std::cout << "END" << std::endl;
     }
-    std::cout << "no_change: " << no_change << std::endl;
+    
     return S_best;
 }
 
-// NOTE TO FUTURE SELF: THERE IS A NOTE ABOUT DIVERSIFICATION AT THE END
-// OF PAGE 4 THAT SHOULD BE CONSIDERED
+// NOTE TO FUTURE SELF: CHECK WHAT IS THE SLOWEST PART OF THE CODE AFTER
+// IMPLEMENTING THE POINTER ARRAY
 
-// NOTE TO FUTURE SELF: CHECK PAGE 4 OF THE OTHER PAPER FOR A QUICKER
-// IMPLEMENTATION OF DELETION
+// NOTE TO FUTURE SELF:: I STILL HAVENT USED THE POINTER ARRAY IN THE DELETION
+// OF A VERTEX TO SPEED UP THE LAST PART, ALSO, THE POINTER ARRAY BEING THE
+// THAT IT IS MIGHT BE TOO SLOW FOR COPYING, THEREFORE I MIGHT HAVE TO CHANGE IT
+// TO BEING TOGETHER WITH THE ARC (x, v) IN x's ADJACENCY LIST, AS THE OTHER
+// PAPER SUGGESTS ON PAGE 4
