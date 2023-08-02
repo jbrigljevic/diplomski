@@ -1,9 +1,12 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.5)
 project(MWIS VERSION 0.1.0)
 
-add_executable(MWIS main.cpp graph.h graph.cpp)
+# for optimization purposes
+#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg -Wall -O3 -no-pie")
+#SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
+#SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -pg")
 
-target_compile_options(MWIS PRIVATE
-  $<$<CXX_COMPILER_ID:MSVC>:/W4>
-  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
-)
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+
+add_executable(MWIS main.cpp graph.h graph.cpp solution.h solution.cpp
+                ILS-VND.h ILS-VND.cpp)

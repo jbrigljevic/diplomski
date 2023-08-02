@@ -3,3 +3,7 @@
 
 # build
 /build/*
+
+gprof2dot.py
+analysis.bat
+analysis.png
