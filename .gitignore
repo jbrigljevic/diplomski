@@ -5,7 +5,7 @@
 /build/*
 
 # test files
-/test/*
+/test/
 
 # for optimization
 gprof2dot.py
