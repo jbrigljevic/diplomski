@@ -18,9 +18,9 @@ class Solution{
 
     std::vector<int> tightness_;
     std::vector<int> mi_;
-
-    void MoveVertex(int vertex, int location);
     
+    void MoveVertex(int vertex, int location);
+
   public:
     Solution(Graph* graph);
 

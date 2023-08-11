@@ -32,17 +32,16 @@ void Solution::Insert(int vertex) {
         mi_[neighbor] -= graph_->weight(vertex);
         ++tightness_[neighbor];
         if (IsFree(neighbor))
-            MoveVertex(neighbor, solution_size_ + free_size_-- - 1);
+            MoveVertex(neighbor, solution_size_ + --free_size_);
     }
 }
 
 void Solution::Remove(int vertex) {
-    // remove the vertex from the solution to the start of the end of the
-    // solution and decrease the solution size
+    // place the vertex at the end of the solution and decrease the solution size
     MoveVertex(vertex, --solution_size_);
     ++free_size_;
     weight_ -= graph_->weight(vertex);
-
+    
     // update the tightness of its neighbors and the array mi
     for (int neighbor : graph_->AdjacencyVector(vertex)) {
         mi_[neighbor] += graph_->weight(vertex);
@@ -60,6 +59,7 @@ bool Solution::N1() {
             for (int neighbor : graph_->AdjacencyVector(vertex)) {
                 if (IsInSolution(neighbor)) Remove(neighbor);
             }
+
             Insert(vertex);
             return true;
         }
@@ -72,7 +72,6 @@ bool Solution::N2() {
     // delete one vertex from S and insert two vertices from S_c
     for (int i = 0; i < solution_size_; ++i) {
         int x = solution_[i];
-        
         // build a vector L(x), consisting of 1-tight neighbors of x
         std::vector<int> L;
         for (int neigh : graph_->AdjacencyVector(x)) {
@@ -83,23 +82,23 @@ bool Solution::N2() {
         
         // find a pair {v, w} in L(x), such that there is no edge between
         // v and w
-        for (auto v = L.begin(); v != L.end(); ++v) {
-            auto N(graph_->AdjacencyVector(*v));
+        for (auto v : L) {
+            auto N(graph_->AdjacencyVector(v));
             auto n = N.begin();
         
-            for (auto w = L.begin(); w != L.end(); ++w) {
+            for (auto w : L) {
                 if (w == v) { continue; }
 
-                while (n != N.end() && *n < *w) { ++n; }
+                while (n != N.end() && *n < w) { ++n; }
 
-                if (n != N.end() && *n == *w) {
+                if (n != N.end() && *n == w) {
                     ++n;
                     continue;
                 } else if (graph_->weight(x) <
-                           graph_->weight(*w) + graph_->weight(*v)) {
+                           graph_->weight(w) + graph_->weight(v)) {
                     Remove(x);
-                    Insert(*v);
-                    Insert(*w);
+                    Insert(v);
+                    Insert(w);
                     return true;
                 }
             }

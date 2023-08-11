@@ -6,8 +6,7 @@
 #include "file.h"
 
 void File::ReadGraph(std::string file_name, std::string type, int& no_nodes,
-                     std::vector<std::vector<int>>& adjacency_matrix,
-                     std::vector<int>& weights) {
+                     std::vector<std::vector<int>>& adjacency_matrix) {
     std::ifstream file(file_name);
     std::string tmp;
     std::string line;
@@ -21,10 +20,6 @@ void File::ReadGraph(std::string file_name, std::string type, int& no_nodes,
         no_nodes = std::stoi(tmp);
 
         adjacency_matrix = std::vector<std::vector<int>>(no_nodes);
-
-        for (int i = 0; i < no_nodes; ++i) {
-            weights.push_back((i + 1) % 200 + 1);
-        }
         
         int fst, snd;
         while (file.good()) {
@@ -35,6 +30,7 @@ void File::ReadGraph(std::string file_name, std::string type, int& no_nodes,
             fst = std::stoi(tmp);
             ss >> tmp;
             snd = std::stoi(tmp);
+
             adjacency_matrix[fst - 1].push_back(snd - 1);
             adjacency_matrix[snd - 1].push_back(fst - 1);
         }
@@ -46,10 +42,6 @@ void File::ReadGraph(std::string file_name, std::string type, int& no_nodes,
         no_nodes = std::stoi(tmp);
 
         adjacency_matrix = std::vector<std::vector<int>>(no_nodes);
-
-        for (int i = 0; i < no_nodes; ++i) {
-            weights.push_back((i + 1) % 200 + 1);
-        }
         
         int fst, snd;
         while (file.good()) {

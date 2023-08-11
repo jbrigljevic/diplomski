@@ -12,7 +12,6 @@ class Algorithm{
     
     void Maximize(Solution&);
     void Perturb(int c, Solution& s);
-    bool FirstImprovement(int k, Solution& s);
     void LocalSearch(Solution& s);
     void Accept(Solution& s, Solution& new_s, Solution& best_s, int& i,
                 int& local_best_w, int c2, int c3, int c4);

@@ -43,7 +43,7 @@ int main(){
         iter /= NO_TESTS;
 
         std::cout << "Average time: " << avg << "s" << std::endl;
-
+        
         File file;
         file.WriteResults("BHOSLIB_results.txt", name, avg, best_known_solution,
                           found_solution_avg, iter);

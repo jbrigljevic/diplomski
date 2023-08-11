@@ -12,9 +12,8 @@ void Algorithm::Maximize(Solution& s) {
 
     // pick random vertices and insert them into S until it is maximal
     while (!s.IsMaximal()) {
-        std::uniform_int_distribution<> dist(s.SolutionSize(),
-            s.SolutionSize() + s.FreeSize() - 1);
-        s.Insert(s.GetVertex(dist(gen)));
+        std::uniform_int_distribution<> dist(0, s.FreeSize() - 1);
+        s.Insert(s.GetVertex(s.SolutionSize() + dist(gen)));
     }
 }
 
@@ -42,23 +41,20 @@ void Algorithm::Perturb(int c, Solution& s) {
     Maximize(new_sol_);
 }
 
-bool Algorithm::FirstImprovement(int k, Solution& s) {
-    new_sol_ = s;
-    if (k == 1) {
-        return new_sol_.N1();
-    } else {
-        return new_sol_.N2();
-    }
-}
-
 void Algorithm::LocalSearch(Solution& s) {
-    int k = 1;
-    while (k <= 2) {
-        if (!FirstImprovement(k, s)) {
+    int k = 0;
+    bool first_improvement;
+    while (k < 2) {
+        if (!k) {
+            first_improvement = s.N1();
+        } else {
+            first_improvement = s.N2();
+        }
+
+        if (!first_improvement) {
             ++k;
         } else {
-            k = 1;
-            s = new_sol_;
+            k = 0;
             Maximize(s);
         }
     }

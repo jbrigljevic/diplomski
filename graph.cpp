@@ -14,13 +14,17 @@ Graph::Graph(int no_nodes, std::vector<std::vector<int>> adjacency_matrix) :
 
 Graph::Graph(std::string file_name, std::string type) {
     File file;
-    file.ReadGraph(file_name, type, no_nodes_, adjacency_matrix_, weights_);
+    file.ReadGraph(file_name, type, no_nodes_, adjacency_matrix_);
+
+    for (int i = 0; i < no_nodes_; ++i) {
+        weights_.push_back((i + 1) % 200 + 1);
+     }
 }
 
 void Graph::Complement() {
     std::vector<std::vector<int>> new_adjacency_matrix(no_nodes_);
     for (int v = 0; v < no_nodes_; ++v) {
-        // go over all vertices w and see if there is and edge {v, w},
+        // go over all vertices w and see if there is an edge {v, w},
         // if there isn't, add it to the new adjacency matrix
         auto W = AdjacencyVector(v);
         auto w_it = W.begin();
