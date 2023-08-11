@@ -4,6 +4,10 @@
 # build
 /build/*
 
+# test files
+/test/*
+
+# for optimization
 gprof2dot.py
 analysis.bat
 analysis.png

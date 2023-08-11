@@ -90,9 +90,7 @@ bool Solution::N2() {
             for (auto w = L.begin(); w != L.end(); ++w) {
                 if (w == v) { continue; }
 
-                while (n != N.end() && *n < *w) {
-                    ++n;
-                }
+                while (n != N.end() && *n < *w) { ++n; }
 
                 if (n != N.end() && *n == *w) {
                     ++n;
@@ -117,17 +115,13 @@ const std::vector<int> Solution::GetSolution() {
     return vec;
 }
 
-void Solution::Check() {
-    std::cout << std::endl << "Checking solution!" << std::endl;
+bool Solution::Check() {
     std::vector<int> sol = GetSolution();
     for (int v : sol) {
         for (int w : sol) {
             if (v == w) continue;
-            if (graph_->ExistsEdge(v, w)) {
-                std::cout << v << " " << w << std::endl;
-                std::cout << "Invalid solution!" << std::endl;
-            }
+            if (graph_->ExistsEdge(v, w)) { return false; }
         }
     }
-    std::cout << "Valid solution!" << std::endl;
+    return true;
 }

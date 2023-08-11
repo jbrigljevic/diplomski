@@ -18,16 +18,10 @@ class Solution{
 
     std::vector<int> tightness_;
     std::vector<int> mi_;
-    
-    void MoveVertex(int vertex, int location);
 
-    bool IsFree(int vertex){
-        return solution_size_ <= permutation_[vertex] &&
-               permutation_[vertex] < solution_size_ + free_size_;
-    }
+    void MoveVertex(int vertex, int location);
     
   public:
-    Solution() = default;
     Solution(Graph* graph);
 
     void Insert(int vertex);
@@ -45,6 +39,11 @@ class Solution{
         return permutation_[vertex] < solution_size_;
     }
 
+    bool IsFree(int vertex){
+        return solution_size_ <= permutation_[vertex] &&
+               permutation_[vertex] < solution_size_ + free_size_;
+    }
+
     const std::vector<int> GetSolution();
-    void Check();
+    bool Check();
 };

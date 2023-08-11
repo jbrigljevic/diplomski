@@ -1,1 +1,2 @@
 https://iridia.ulb.ac.be/~fmascia/maximum_clique/DIMACS-benchmark#detp_hat1500-3
+https://networkrepository.com/dimacs.php

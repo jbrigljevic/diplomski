@@ -8,5 +8,5 @@ project(MWIS VERSION 0.1.0)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
-add_executable(MWIS main.cpp graph.h graph.cpp solution.h solution.cpp
-                ILS-VND.h ILS-VND.cpp)
+add_executable(MWIS graph.h graph.cpp solution.h solution.cpp
+                ILS-VND.h ILS-VND.cpp file.h file.cpp test.h test.cpp)

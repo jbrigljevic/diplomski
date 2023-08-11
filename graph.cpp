@@ -1,13 +1,9 @@
 #include "graph.h"
 #include "solution.h"
+#include "file.h"
 
 #include <fstream>
 #include <sstream>
-
-void exit() {
-    std::cout << "Aborted!" << std::endl;
-    std::exit(0);
-}
 
 Graph::Graph(int no_nodes, std::vector<std::vector<int>> adjacency_matrix) :
              no_nodes_(no_nodes), adjacency_matrix_(adjacency_matrix) {
@@ -16,38 +12,9 @@ Graph::Graph(int no_nodes, std::vector<std::vector<int>> adjacency_matrix) :
     }
 }
 
-Graph::Graph(std::string file_name) {
-    std::ifstream file(file_name);
-    std::string tmp;
-    std::string line;
-
-    if (file.is_open()) {
-        std::getline(file, line);
-        std::stringstream ss(line);
-        ss >> tmp;
-        ss >> tmp;
-        ss >> tmp;
-        no_nodes_ = std::stoi(tmp);
-        
-        adjacency_matrix_ = std::vector<std::vector<int>>(no_nodes_);
-
-        for (int i = 0; i < no_nodes_; ++i) {
-            weights_.push_back((i + 1) % 200 + 1);
-        }
-    }
-
-    int fst, snd;
-    while (file.good()) {
-        std::getline(file, line);
-        std::stringstream ss(line);
-        ss >> tmp;
-        ss >> tmp;
-        fst = std::stoi(tmp);
-        ss >> tmp;
-        snd = std::stoi(tmp);
-        adjacency_matrix_[fst - 1].push_back(snd - 1);
-        adjacency_matrix_[snd - 1].push_back(fst - 1);
-    }
+Graph::Graph(std::string file_name, std::string type) {
+    File file;
+    file.ReadGraph(file_name, type, no_nodes_, adjacency_matrix_, weights_);
 }
 
 void Graph::Complement() {

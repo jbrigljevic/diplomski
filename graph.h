@@ -1,17 +1,15 @@
 #pragma once
 
 #include <iostream>
-#include <chrono>
 #include <vector>
 #include <set>
 #include <list>
 #include <algorithm>
-#include <cmath>
 
 class Graph{
 public:
     Graph(int no_nodes, std::vector<std::vector<int>> adjacency_matrix);
-    Graph(std::string fileName);
+    Graph(std::string fileName, std::string type);
 
     void Complement();
 

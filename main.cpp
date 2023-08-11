@@ -3,8 +3,8 @@
 #include "ILS-VND.h"
 
 int main() {
-    std::string file_name("../test/BHOSLIB/frb30-15-1.txt");
-    Graph graph(file_name);
+    std::string file_name("../test/DIMACS/brock200-1.txt");
+    Graph graph(file_name, "DIMACS");
     graph.Complement();
 
     Algorithm alg(&graph);

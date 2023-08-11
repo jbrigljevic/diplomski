@@ -1,6 +1,6 @@
-#include "ILS-VND.h"
-
 #include <random>
+
+#include "ILS-VND.h"
 
 Algorithm::Algorithm(Graph* graph) : graph_(graph), 
         current_sol_(Solution(graph)), best_sol_(Solution(graph)),
@@ -28,9 +28,11 @@ void Algorithm::Perturb(int c, Solution& s) {
         std::uniform_int_distribution<> dist(new_sol_.SolutionSize(),
                                              graph_->no_nodes() - 1);
         int vertex = new_sol_.GetVertex(dist(gen));
-        for (int neighbor : graph_->AdjacencyVector(vertex)) {
-            if (new_sol_.IsInSolution(neighbor)) {
-                new_sol_.Remove(neighbor);
+        if (!new_sol_.IsFree(vertex)) {
+            for (int neighbor : graph_->AdjacencyVector(vertex)) {
+                if (new_sol_.IsInSolution(neighbor)) {
+                    new_sol_.Remove(neighbor);
+                }
             }
         }
         
@@ -91,7 +93,9 @@ void Algorithm::Accept(Solution& s, Solution& new_s, Solution& best_s, int& i,
     }
 }
 
-Solution& Algorithm::RunAlgorithm(int max_iter, int c1, int c2, int c3, int c4) {
+int Algorithm::RunAlgorithm(int best_known_solution, int c1, int c2, int c3,
+                               int c4) {
+    auto start = std::chrono::high_resolution_clock::now();
     Solution& S = current_sol_;
     Solution& S_best = best_sol_;
     Solution& S_new = new_sol_;
@@ -102,29 +106,31 @@ Solution& Algorithm::RunAlgorithm(int max_iter, int c1, int c2, int c3, int c4) 
 
     int local_best_w = S.SolutionWeight();
     int i = 1;
-    int no_change = 0;
-    int previous_weight = 0;
-    while (max_iter-- && no_change != NO_CHANGE) {
-        if (!(max_iter % 50000)) {
-            std::cout << "Iteration #" << MAX_ITER - max_iter << std::endl;
+    int iter = 0;
+    while (iter++ < MAX_ITER) {
+        /*if (!(iter % 50000)) {
+            std::cout << "Iteration #" << iter << std::endl;
             std::cout << S_best.SolutionWeight() << std::endl;
-        }
-
-        if (S.SolutionWeight() > previous_weight) {
-            previous_weight = S.SolutionWeight();
-            no_change = 0;
-        } else {
-            ++no_change;
-        }
-        if(S_best.SolutionWeight() == 2990) break;
+        }*/
 
         Perturb(c1, S);
         LocalSearch(S_new);
         Accept(S, S_new, S_best, i, local_best_w, c2, c3, c4);
+        if (S_best.SolutionWeight() == best_known_solution) break;
     }
-    
-    std::cout << std::endl << "Algorithm ended after " << MAX_ITER - max_iter <<
-        " iterations." << std::endl;
 
-    return S_best;
+    auto end = std::chrono::high_resolution_clock::now();
+    double time = std::chrono::duration_cast<std::chrono::microseconds>
+                  (end - start).count() / 1e6;
+
+    /*std::cout << std::endl << "Algorithm ended after " << iter <<
+        " iterations." << std::endl;
+    std::cout << "CPU time: " << time << "s" << std::endl << std::endl;
+    print(S_best.GetSolution(), "Solution: ");
+    std::cout << "Result: " << S_best.SolutionWeight() << std::endl;*/
+    if (!S_best.Check()) std::cout << "Invalid solution!" << std::endl;
+
+    execution_time_ = time;
+
+    return iter;
 }
