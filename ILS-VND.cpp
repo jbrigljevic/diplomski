@@ -1,15 +1,10 @@
-#include <random>
-
 #include "ILS-VND.h"
 
 Algorithm::Algorithm(Graph* graph) : graph_(graph), 
         current_sol_(Solution(graph)), best_sol_(Solution(graph)),
-        new_sol_(Solution(graph)) {}
+        new_sol_(Solution(graph)), gen(rd()) {}
 
 void Algorithm::Maximize(Solution& s) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-
     // pick random vertices and insert them into S until it is maximal
     while (!s.IsMaximal()) {
         std::uniform_int_distribution<> dist(0, s.FreeSize() - 1);
@@ -18,9 +13,6 @@ void Algorithm::Maximize(Solution& s) {
 }
 
 void Algorithm::Perturb(int c, Solution& s) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-
     new_sol_ = s;
     // pick c random vertices and insert them into S
     for (int i = 0; i < c; ++i) {

@@ -2,7 +2,9 @@
 
 #include "solution.h"
 #include "graph.h"
+
 #include <chrono>
+#include <random>
 
 #define MAX_ITER 2 * (int)1e6
 
@@ -27,6 +29,9 @@ class Algorithm{
     Solution current_sol_;
     Solution best_sol_;
     Solution new_sol_;
+
+    std::random_device rd;
+    std::mt19937 gen;
 
     double execution_time_;
 };
