@@ -1,8 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <set>
-#include <list>
 
 class Graph;
 

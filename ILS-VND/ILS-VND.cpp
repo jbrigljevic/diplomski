@@ -104,7 +104,7 @@ int Algorithm::RunAlgorithm(int best_known_solution, int c1, int c2, int c3,
         Perturb(c1, S);
         LocalSearch(S_new);
         Accept(S, S_new, S_best, i, local_best_w, c2, c3, c4);
-        if (S_best.SolutionWeight() == best_known_solution) break;
+        if (S_best.SolutionWeight() >= best_known_solution) break;
     }
 
     auto end = std::chrono::high_resolution_clock::now();

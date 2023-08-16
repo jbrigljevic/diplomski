@@ -2,22 +2,24 @@
 
 #include <iostream>
 #include <vector>
-#include <set>
-#include <list>
 #include <algorithm>
 
 class Graph{
 public:
+    Graph() = default;
     Graph(int no_nodes, std::vector<std::vector<int>> adjacency_matrix);
-    Graph(std::string fileName, std::string type);
 
-    void Complement();
-
-    int no_nodes() { return no_nodes_; }
-    int weight(int vertex) { return weights_[vertex]; }
+    int no_nodes() const { return no_nodes_; }
+    int weight(int vertex) const { return weights_[vertex]; }
     std::vector<int> weights() { return weights_; }
-    const std::vector<int> AdjacencyVector(int vertex) {
+    std::vector<int> AdjacencyVector(int vertex) const {
         return adjacency_matrix_[vertex];
+    }
+
+    bool IsLeaf(int vertex) const {
+        for(auto neigh : adjacency_matrix_[vertex])
+            if (neigh > vertex) return false;
+        return true;
     }
 
     bool ExistsEdge(int v1, int v2){
@@ -40,11 +42,3 @@ private:
     std::vector<std::vector<int>> adjacency_matrix_;
     std::vector<int> weights_;
 };
-
-template<typename T>
-void print(T container, std::string pre = "NULL") {
-    if (pre != "NULL") std::cout << pre;
-    for (auto it = container.begin(); it != container.end(); ++it)
-        std::cout << *it << " ";
-    std::cout << std::endl;
-}

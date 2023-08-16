@@ -1,13 +1,15 @@
 # VSCode
-*.vscode
+/ILS-VND/*.vscode
+/tree/*.vscode
 
 # build
-/build/*
+/ILS-VND/build/*
+/tree/build/*
 
 # test files
-/test/
+/ILS-VND/test/
 
 # for optimization
-gprof2dot.py
-analysis.bat
-analysis.png
+/ILS-VND/gprof2dot.py
+/ILS-VND/analysis.bat
+/ILS-VND/analysis.png

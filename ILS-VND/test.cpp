@@ -18,7 +18,7 @@ int main(){
         
         if (name == std::string("frb100-40") ||
             name == std::string("source")) continue;
-        if (!start && name != "frb50-23-2") { continue; }
+        if (!start && name != "frb40-19-1") { continue; }
         else start = true;
         std::cout << "Testing file: '" << name << "'" << std::endl;
 
