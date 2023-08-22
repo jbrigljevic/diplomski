@@ -53,7 +53,10 @@ void Algorithm::LocalSearch(Solution& s) {
 }
 
 void Algorithm::Accept(Solution& s, Solution& new_s, Solution& best_s, int& i,
-                       int& local_best_w, int c2, int c3, int c4) {
+                       int& local_best_w, int c2, int c3, int c4,
+                       std::chrono::time_point<std::chrono::_V2::system_clock,
+                       std::chrono::_V2::system_clock::duration>& end_best,
+                       const int& iter) {
     int weight_s = s.SolutionWeight();
     if (weight_s < new_s.SolutionWeight()) {
         s = new_s;
@@ -66,6 +69,8 @@ void Algorithm::Accept(Solution& s, Solution& new_s, Solution& best_s, int& i,
         }
 
         if (best_s.SolutionWeight() < weight_s) {
+            end_best = std::chrono::high_resolution_clock::now();
+            no_iter_to_best_ = iter;
             best_s = s;
             i = i - s.SolutionSize() * c3;
         }
@@ -84,6 +89,7 @@ void Algorithm::Accept(Solution& s, Solution& new_s, Solution& best_s, int& i,
 int Algorithm::RunAlgorithm(int best_known_solution, int c1, int c2, int c3,
                                int c4) {
     auto start = std::chrono::high_resolution_clock::now();
+    auto end_best = start;
     Solution& S = current_sol_;
     Solution& S_best = best_sol_;
     Solution& S_new = new_sol_;
@@ -95,30 +101,22 @@ int Algorithm::RunAlgorithm(int best_known_solution, int c1, int c2, int c3,
     int local_best_w = S.SolutionWeight();
     int i = 1;
     int iter = 0;
-    while (iter++ < MAX_ITER) {
-        /*if (!(iter % 50000)) {
-            std::cout << "Iteration #" << iter << std::endl;
-            std::cout << S_best.SolutionWeight() << std::endl;
-        }*/
 
+    while (++iter < MAX_ITER) {
         Perturb(c1, S);
         LocalSearch(S_new);
-        Accept(S, S_new, S_best, i, local_best_w, c2, c3, c4);
+        Accept(S, S_new, S_best, i, local_best_w, c2, c3, c4,
+               end_best, iter);
         if (S_best.SolutionWeight() >= best_known_solution) break;
     }
 
     auto end = std::chrono::high_resolution_clock::now();
-    double time = std::chrono::duration_cast<std::chrono::microseconds>
-                  (end - start).count() / 1e6;
+    execution_time_ = std::chrono::duration_cast<std::chrono::microseconds>
+                      (end - start).count() / 1e6;
+    best_solution_time_ = std::chrono::duration_cast<std::chrono::microseconds>
+                          (end_best - start).count() / 1e6;
 
-    /*std::cout << std::endl << "Algorithm ended after " << iter <<
-        " iterations." << std::endl;
-    std::cout << "CPU time: " << time << "s" << std::endl << std::endl;
-    print(S_best.GetSolution(), "Solution: ");
-    std::cout << "Result: " << S_best.SolutionWeight() << std::endl;*/
     if (!S_best.Check()) std::cout << "Invalid solution!" << std::endl;
-
-    execution_time_ = time;
 
     return iter;
 }

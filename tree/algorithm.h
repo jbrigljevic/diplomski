@@ -10,7 +10,16 @@ class Algorithm {
 
     void Calculate(int vertex);
     void Examine(int vertex);
-    std::set<int> RunAlgorithm();
+    void RunAlgorithm();
+
+    std::set<int> GetSolution() { return solution_; }
+    int GetSolutionWeight() {
+        int ret = 0;
+        for (auto vertex : solution_) {
+            ret += graph_.weight(vertex);
+        }
+        return ret;
+    }
 
   private:
     const Graph& graph_;

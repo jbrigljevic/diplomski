@@ -33,8 +33,7 @@ void Algorithm::Examine(int vertex) {
     }
 }
 
-std::set<int> Algorithm::RunAlgorithm() {
+void Algorithm::RunAlgorithm() {
    Calculate(0);
    Examine(0);
-   return solution_;
 }

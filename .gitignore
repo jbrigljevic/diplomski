@@ -5,6 +5,8 @@
 # build
 /ILS-VND/build/*
 /tree/build/*
+/tree/visualization.png
+/tree/solution.txt
 
 # test files
 /ILS-VND/test/

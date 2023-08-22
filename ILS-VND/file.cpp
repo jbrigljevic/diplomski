@@ -46,6 +46,7 @@ void File::ReadGraph(std::string file_name, std::string type, int& no_nodes,
         int fst, snd;
         while (file.good()) {
             std::getline(file, line);
+            if(line == "") continue;
             std::stringstream ss(line);
             ss >> tmp;
             fst = std::stoi(tmp);
@@ -58,11 +59,13 @@ void File::ReadGraph(std::string file_name, std::string type, int& no_nodes,
     file.close();
 }
 
-void File::WriteResults(std::string file_name, std::string name, double avg,
-                        double best_known_solution, double found_solution_avg,
-                        int iter) {
+void File::WriteResults(std::string file_name, std::string name, double avg_time,
+                        int avg_iter, double avg_best_time, int avg_best_iter,
+                        double avg_solution_weight, int best_found_solution,
+                        int best_known_solution) {
     std::ofstream file("../test/" + file_name, std::ios::app);
-    file << name << " " << avg << " " << best_known_solution << " " <<
-        found_solution_avg << " " << iter << std::endl;
+    file << name << " " << avg_time << " " << avg_iter << " " << avg_best_time <<
+        " " << avg_best_iter << " " << avg_solution_weight << " " <<
+        best_found_solution << " " << best_known_solution << std::endl;
     file.close();
 }
