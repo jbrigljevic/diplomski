@@ -1,5 +1,7 @@
 # Maximum Weight Independent Set Problem
 
+This is the practical part of my master's thesis for my master's degree in computer science and mathematics at the Faculty of Science - Department of Mathematics in Zagreb, Croatia.
+
 ## Table of contents
 * [General info](#general-info)
 * [Technologies](#technologies)
